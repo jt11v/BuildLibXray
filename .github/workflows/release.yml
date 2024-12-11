@@ -22,10 +22,7 @@ jobs:
           repository: 'XTLS/libXray'
           path: 'xray'
           ref: ${{ github.event.inputs.tag }}
-      
-      - name: Clone Xray-core
-        run: |
-          git clone https://github.com/XTLS/Xray-core ../Xray-core
+          submodules: 'recursive'
           
       - name: Debug Directory
         run: |
@@ -42,7 +39,6 @@ jobs:
         run: |
           rm -f go.mod go.sum
           go mod init github.com/xtls/libxray
-          go mod edit -replace=github.com/xtls/xray-core=../Xray-core
           go mod tidy
           
       - name: Build xcframework
