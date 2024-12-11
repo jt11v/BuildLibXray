@@ -29,13 +29,18 @@ jobs:
         run: |
           git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
 
+      # Fix Xray-Core path
+      - name: Adjust Xray-Core Path
+        run: |
+          ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
+
       # Debug directory structure
       - name: Debug Directory
         run: |
           pwd
           ls -la
           ls -la xray
-          ls -la xray/Xray-core
+          ls -la ../Xray-core
 
       # Setup Go environment
       - name: Setup Go
