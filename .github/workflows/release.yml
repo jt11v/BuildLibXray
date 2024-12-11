@@ -22,6 +22,10 @@ jobs:
           repository: 'XTLS/libXray'
           path: 'xray'
           ref: ${{ github.event.inputs.tag }}
+      
+      - name: Clone Xray-core
+        run: |
+          git clone https://github.com/XTLS/Xray-core ../Xray-core
           
       - name: Setup Go
         uses: actions/setup-go@v3.5.0
