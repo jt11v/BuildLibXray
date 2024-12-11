@@ -17,30 +17,41 @@ jobs:
     runs-on: macOS-15
     steps:
 
+      # Checkout libXray
       - uses: actions/checkout@v3
         with:
           repository: 'XTLS/libXray'
           path: 'xray'
           ref: ${{ github.event.inputs.tag }}
-          submodules: 'recursive'
-          
+
+      # Clone Xray-Core
+      - name: Clone Xray-Core
+        run: |
+          git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
+
+      # Debug directory structure
       - name: Debug Directory
         run: |
           pwd
           ls -la
-          ls -la ../
-      
+          ls -la xray
+          ls -la xray/Xray-core
+
+      # Setup Go environment
       - name: Setup Go
         uses: actions/setup-go@v3.5.0
         with:
           go-version: '1.22.4'
-      
+
+      # Prepare Go modules
       - name: Prepare GO
         run: |
+          cd xray
           rm -f go.mod go.sum
           go mod init github.com/xtls/libxray
           go mod tidy
-          
+
+      # Build xcframework
       - name: Build xcframework
         run: |
           cd xray
