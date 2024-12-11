@@ -37,10 +37,13 @@ jobs:
       # Debug directory structure
       - name: Debug Directory
         run: |
-          pwd
+          echo "Current Directory: $(pwd)"
+          echo "Root Directory Contents:"
           ls -la
+          echo "xray Directory Contents:"
           ls -la xray
-          ls -la ../Xray-core
+          echo "Xray-core Directory via SymLink:"
+          ls -la xray/Xray-core
 
       # Setup Go environment
       - name: Setup Go
