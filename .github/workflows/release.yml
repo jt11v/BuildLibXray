@@ -27,6 +27,12 @@ jobs:
         run: |
           git clone https://github.com/XTLS/Xray-core ../Xray-core
           
+      - name: Debug Directory
+        run: |
+          pwd
+          ls -la
+          ls -la ../
+      
       - name: Setup Go
         uses: actions/setup-go@v3.5.0
         with:
@@ -36,8 +42,8 @@ jobs:
         run: |
           rm -f go.mod go.sum
           go mod init github.com/xtls/libxray
+          go mod edit -replace=github.com/xtls/xray-core=../Xray-core
           go mod tidy
-          go get ./...
           
       - name: Build xcframework
         run: |
