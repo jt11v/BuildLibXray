@@ -89,7 +89,7 @@ jobs:
           echo "  targets: [" >> Package.swift
           echo "    .binaryTarget(" >> Package.swift
           echo "      name: \"LibXray\"," >> Package.swift
-          echo "      url: \"https://github.com/tozik/LibXray-tozik/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip\"," >> Package.swift
+          echo "      url: \"https://github.com/tozik/LibXray/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip\"," >> Package.swift
           echo "      checksum: \"${{ env.FILE_CHECKSUM }}\"" >> Package.swift
           echo "    )" >> Package.swift
           echo "  ]" >> Package.swift
@@ -111,5 +111,5 @@ jobs:
           tag_name: ${{ github.event.inputs.version }}
           body: 'Release built from source'
           files: xray/LibXray.xcframework.zip
-          repository: 'tozik/LibXray-tozik'
+          repository: 'tozik/LibXray'
           token: ${{ secrets.SECOND_REPO_TOKEN }}
