@@ -95,13 +95,23 @@ jobs:
           echo "  ]" >> Package.swift
           echo ")" >> Package.swift
           
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: LibXray Release ${{ github.event.inputs.version }}
-          commit_user_name: tozik  
-          commit_user_email: tozika@inbox.ru
-          tagging_message: ${{ github.event.inputs.version }}
-          file_pattern: 'Package.swift'
+
+      # Пушим артефакт и Package.swift
+      - name: Commit Package.swift
+        run: |
+          # Выводим список файлов в текущем каталоге и проверяем артефакт
+          ls -l ./HevSocks5Tunnel.xcframework.zip
+          shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
+          
+          # Добавляем только Package.swift в git
+          git add Package.swift
+          
+          # Выполняем commit с тегом версии
+          git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}"
+          
+          # Пушим изменения в текущий репозиторий
+          git push
+      
           
       # Загрузим релизный артефакт в публичный репозиторий
       - name: Upload release asset to second repo
