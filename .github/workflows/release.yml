@@ -99,10 +99,6 @@ jobs:
       # Пушим артефакт и Package.swift
       - name: Commit Package.swift
         run: |
-          # Выводим список файлов в текущем каталоге и проверяем артефакт
-          ls -l ./HevSocks5Tunnel.xcframework.zip
-          shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
-          
           # Добавляем только Package.swift в git
           git add Package.swift
           
