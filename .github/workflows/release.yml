@@ -20,6 +20,7 @@ jobs:
       # Checkout libXray
       - uses: actions/checkout@v3
         with:
+          fetch-depth: 0  # Обеспечить полный клон репозитория
           repository: 'XTLS/libXray'
           path: 'xray'
           ref: ${{ github.event.inputs.tag }}
@@ -59,21 +60,13 @@ jobs:
           go mod init github.com/xtls/libxray
           go mod tidy
 
-      - name: Prepare for Git commit
-        run: |
-          echo "Switching to root directory of the repository..."
-          cd "${GITHUB_WORKSPACE}"  # Переключаемся в корень репозитория
-          echo "Current Directory: $(pwd)"
-          echo "Root Directory Contents:"
-          ls -la
-
       # Build xcframework
       - name: Build xcframework
         run: |
           cd xray
           python3 build/main.py apple gomobile
           zip -ry ./LibXray.xcframework.zip ./LibXray.xcframework
-          
+
       - name: Detect checksum
         run: |
           export TEMP=`shasum -a 256 xray/LibXray.xcframework.zip`
@@ -81,9 +74,11 @@ jobs:
           echo "FILE_CHECKSUM=${CHECKSUM}" >> $GITHUB_ENV
           unset CHECKSUM
           unset TEMP
-          
+
+      # Update package file in xray directory
       - name: Update package file
         run: |
+          cd xray
           echo "// swift-tools-version: 5.7" > Package.swift
           echo "" >> Package.swift
           echo "import PackageDescription" >> Package.swift
@@ -102,17 +97,18 @@ jobs:
           echo "    )" >> Package.swift
           echo "  ]" >> Package.swift
           echo ")" >> Package.swift
-          
-      
-      - uses: stefanzweifel/git-auto-commit-action@v4
+
+      # Commit the changes in xray directory
+      - name: Commit Package.swift
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
+          repository: './xray'  # Указываем путь до репозитория
           commit_message: LibXray Release ${{ github.event.inputs.version }}
           commit_user_name: tozik
           commit_user_email: tozika@inbox.ru
           tagging_message: ${{ github.event.inputs.version }}
           file_pattern: 'Package.swift'
-      
-          
+
       # Загрузим релизный артефакт в публичный репозиторий
       - name: Upload release asset to second repo
         uses: softprops/action-gh-release@v1
