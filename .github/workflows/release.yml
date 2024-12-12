@@ -95,18 +95,15 @@ jobs:
           echo "  ]" >> Package.swift
           echo ")" >> Package.swift
           
-
-      # Пушим артефакт и Package.swift
-      - name: Commit Package.swift
+      
+      # Пушим обновленный файл Package.swift в текущий репозиторий
+      - name: Push updated Package.swift
         run: |
-          # Добавляем только Package.swift в git
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
           git add Package.swift
-          
-          # Выполняем commit с тегом версии
           git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}"
-          
-          # Пушим изменения в текущий репозиторий
-          git push
+          git push origin ${{ github.ref_name }}
       
           
       # Загрузим релизный артефакт в публичный репозиторий
