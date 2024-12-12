@@ -96,14 +96,33 @@ jobs:
           echo ")" >> Package.swift
           
       
-      # Пушим обновленный файл Package.swift в текущий репозиторий
-      - name: Push updated Package.swift
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add Package.swift
-          git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}"
-          git push origin ${{ github.ref_name }}
+      - name: Upload Package.swift to current repo
+        uses: peter-evans/create-or-update-file@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          path: Package.swift
+          content: |
+            // swift-tools-version: 5.7
+      
+            import PackageDescription
+      
+            let package = Package(
+              name: "LibXray",
+              platforms: [.iOS(.v15), .macOS(.v13)],
+              products: [
+                .library(name: "LibXray", targets: ["LibXray"])
+              ],
+              targets: [
+                .binaryTarget(
+                  name: "LibXray",
+                  url: "https://github.com/tozik/LibXray/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip",
+                  checksum: "${{ env.FILE_CHECKSUM }}"
+                )
+              ]
+            )
+          commit-message: "Update Package.swift for version ${{ github.event.inputs.version }}"
+          branch: ${{ github.ref_name }}
       
           
       # Загрузим релизный артефакт в публичный репозиторий
