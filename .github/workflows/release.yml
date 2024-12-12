@@ -59,6 +59,14 @@ jobs:
           go mod init github.com/xtls/libxray
           go mod tidy
 
+      - name: Prepare for Git commit
+        run: |
+          echo "Switching to root directory of the repository..."
+          cd "${GITHUB_WORKSPACE}"  # Переключаемся в корень репозитория
+          echo "Current Directory: $(pwd)"
+          echo "Root Directory Contents:"
+          ls -la
+
       # Build xcframework
       - name: Build xcframework
         run: |
