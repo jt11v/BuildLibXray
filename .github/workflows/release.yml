@@ -107,12 +107,19 @@ jobs:
           #ls -l ./HevSocks5Tunnel.xcframework.zip
           #shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
           
-          # Добавляем только Package.swift в git
-          git add Package.swift
+          # Переходим в корневую директорию
+          cd "${GITHUB_WORKSPACE}"
+
+          # Проверяем, где находится репозиторий
+          echo "Current Directory: $(pwd)"
+          ls -la
+
+          # Добавляем изменения в git
+          git add xray/Package.swift
           
           # Выполняем commit с тегом версии
-          git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}"
-          
+          git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}" || echo "No changes to commit"
+
           # Пушим изменения в текущий репозиторий
           git push
           
