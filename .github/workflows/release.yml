@@ -116,13 +116,13 @@ jobs:
           git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}"
           git push origin HEAD
           
-      # Commit the changes in xray directory
-      - name: Commit Package.swift
-        uses: stefanzweifel/git-auto-commit-action@v4
+      # Загрузим релизный артефакт в публичный репозиторий
+      - name: Upload release asset to second repo
+        uses: softprops/action-gh-release@v1
         with:
-          repository: './xray'  # Указываем путь до репозитория
-          commit_message: LibXray Release ${{ github.event.inputs.version }}
-          commit_user_name: tozik
-          commit_user_email: tozika@inbox.ru
-          tagging_message: ${{ github.event.inputs.version }}
-          file_pattern: 'Package.swift'
+          draft: false
+          tag_name: ${{ github.event.inputs.version }}
+          body: 'Release built from source'
+          files: xray/LibXray.xcframework.zip
+          repository: 'tozik/LibXray'
+          token: ${{ secrets.SECOND_REPO_TOKEN }}
