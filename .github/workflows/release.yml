@@ -104,8 +104,8 @@ jobs:
       - name: Commit Package.swift
         run: |
           # Выводим список файлов в текущем каталоге и проверяем артефакт
-          ls -l ./HevSocks5Tunnel.xcframework.zip
-          shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
+          #ls -l ./HevSocks5Tunnel.xcframework.zip
+          #shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
           
           # Добавляем только Package.swift в git
           git add Package.swift
@@ -115,6 +115,7 @@ jobs:
           
           # Пушим изменения в текущий репозиторий
           git push
+          
       # Commit the changes in xray directory
       #- name: Commit Package.swift
       #  uses: stefanzweifel/git-auto-commit-action@v4
