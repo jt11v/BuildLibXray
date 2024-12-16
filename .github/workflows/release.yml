@@ -30,35 +30,35 @@ jobs:
         run: |
           git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
 
-      # Fix Xray-Core path
-      - name: Adjust Xray-Core Path
-        run: |
-          ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
+      # # Fix Xray-Core path
+      # - name: Adjust Xray-Core Path
+      #   run: |
+      #     ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
 
-      # Debug directory structure
-      - name: Debug Directory
-        run: |
-          echo "Current Directory: $(pwd)"
-          echo "Root Directory Contents:"
-          ls -la
-          echo "xray Directory Contents:"
-          ls -la xray
-          echo "Xray-core Directory via SymLink:"
-          ls -la xray/Xray-core
+      # # Debug directory structure
+      # - name: Debug Directory
+      #   run: |
+      #     echo "Current Directory: $(pwd)"
+      #     echo "Root Directory Contents:"
+      #     ls -la
+      #     echo "xray Directory Contents:"
+      #     ls -la xray
+      #     echo "Xray-core Directory via SymLink:"
+      #     ls -la xray/Xray-core
 
       # Setup Go environment
-      - name: Setup Go
-        uses: actions/setup-go@v3.5.0
-        with:
-          go-version: '1.22.4'
+      # - name: Setup Go
+      #   uses: actions/setup-go@v3.5.0
+      #   with:
+      #     go-version: '1.22.4'
 
       # Prepare Go modules
-      - name: Prepare GO
-        run: |
-          cd xray
-          rm -f go.mod go.sum
-          go mod init github.com/xtls/libxray
-          go mod tidy
+      # - name: Prepare GO
+      #   run: |
+      #     cd xray
+      #     rm -f go.mod go.sum
+      #     go mod init github.com/xtls/libxray
+      #     go mod tidy
 
       # Build xcframework
       #- name: Build xcframework
