@@ -98,7 +98,7 @@ jobs:
           echo "    .binaryTarget(" >> Package.swift
           echo "      name: \"LibXray\"," >> Package.swift
           echo "      url: \"https://github.com/tozik/LibXray/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip\"," >> Package.swift
-          echo "      checksum: \"<CHECKSUM>\"" >> Package.swift
+          echo "      checksum: \"${{ CHECKSUM }}\"" >> Package.swift
           echo "    )" >> Package.swift
           echo "  ]" >> Package.swift
           echo ")" >> Package.swift
