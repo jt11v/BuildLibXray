@@ -102,15 +102,13 @@ jobs:
           echo "    )" >> Package.swift
           echo "  ]" >> Package.swift
           echo ")" >> Package.swift
-          echo "---------------------------"
-          ls -LR
           
       # Пушим артефакт и Package.swift
       - name: Commit Package.swift
         run: |
           # Выводим список файлов в текущем каталоге и проверяем артефакт
-          ls -l ./HevSocks5Tunnel.xcframework.zip
-          shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
+          # ls -l ./HevSocks5Tunnel.xcframework.zip
+          # shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
           
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
