@@ -17,8 +17,15 @@ jobs:
     runs-on: macOS-15
     steps:
 
-      # Checkout libXray
-      - uses: actions/checkout@v3
+      # Checkout основного репозитория (в котором запускается workflow)
+      - name: Checkout main repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Обеспечить полный клон репозитория
+
+      # Checkout libXray в поддиректорию 'xray'
+      - name: Checkout libXray
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Обеспечить полный клон репозитория
           repository: 'XTLS/libXray'
