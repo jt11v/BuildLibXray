@@ -76,7 +76,7 @@ jobs:
 
       - name: Generate Package.swift
         run: |
-          export CHECKSUM=$(shasum -a 256 ./LibXray.xcframework.zip | awk '{print $1}')
+          export CHECKSUM=$(shasum -a 256 xray/LibXray.xcframework.zip | awk '{print $1}')
           echo "// swift-tools-version: 5.7" > Package.swift
           echo "" >> Package.swift
           echo "import PackageDescription" >> Package.swift
@@ -100,9 +100,6 @@ jobs:
       - name: Commit Package.swift
         run: |
           # Выводим список файлов в текущем каталоге и проверяем артефакт
-          # ls -l ./HevSocks5Tunnel.xcframework.zip
-          # shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
-          
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add Package.swift
