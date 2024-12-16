@@ -82,10 +82,8 @@ jobs:
       #    unset CHECKSUM
       #    unset TEMP
 
-      # Update package file in xray directory
-      - name: Update package file
+      - name: Generate Package.swift
         run: |
-          cd xray
           echo "// swift-tools-version: 5.7" > Package.swift
           echo "" >> Package.swift
           echo "import PackageDescription" >> Package.swift
@@ -100,7 +98,7 @@ jobs:
           echo "    .binaryTarget(" >> Package.swift
           echo "      name: \"LibXray\"," >> Package.swift
           echo "      url: \"https://github.com/tozik/LibXray/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip\"," >> Package.swift
-          echo "      checksum: \"${{ env.FILE_CHECKSUM }}\"" >> Package.swift
+          echo "      checksum: \"<CHECKSUM>\"" >> Package.swift
           echo "    )" >> Package.swift
           echo "  ]" >> Package.swift
           echo ")" >> Package.swift
@@ -114,21 +112,11 @@ jobs:
           #ls -l ./HevSocks5Tunnel.xcframework.zip
           #shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
           
-          # Переходим в директорию 'xray', где находится Git-репозиторий
-          cd xray
-
-          # Проверяем, где находится репозиторий
-          echo "Current Directory: $(pwd)"
-          ls -la
-
-          # Добавляем изменения в git
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
           git add Package.swift
-          
-          # Выполняем commit с тегом версии
-          git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}" || echo "No changes to commit"
-
-          # Пушим изменения в текущий репозиторий
-          git push
+          git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}"
+          git push origin HEAD
           
       # Commit the changes in xray directory
       #- name: Commit Package.swift
