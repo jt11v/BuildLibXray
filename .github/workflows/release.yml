@@ -107,15 +107,15 @@ jobs:
           #ls -l ./HevSocks5Tunnel.xcframework.zip
           #shasum -a 256 ./HevSocks5Tunnel.xcframework.zip
           
-          # Переходим в корневую директорию
-          cd "${GITHUB_WORKSPACE}"
+          # Переходим в директорию 'xray', где находится Git-репозиторий
+          cd xray
 
           # Проверяем, где находится репозиторий
           echo "Current Directory: $(pwd)"
           ls -la
 
           # Добавляем изменения в git
-          git add xray/Package.swift
+          git add Package.swift
           
           # Выполняем commit с тегом версии
           git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}" || echo "No changes to commit"
