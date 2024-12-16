@@ -74,23 +74,16 @@ jobs:
           python3 build/main.py apple gomobile
           zip -ry ./LibXray.xcframework.zip ./LibXray.xcframework
 
-      - name: Detect checksum
-        run: |
-          export TEMP=`shasum -a 256 xray/LibXray.xcframework.zip`
-          export CHECKSUM=${TEMP:0:64}
-          echo "FILE_CHECKSUM=${CHECKSUM}" >> $GITHUB_ENV
-          unset CHECKSUM
-          unset TEMP
-
       - name: Generate Package.swift
         run: |
+          export CHECKSUM=$(shasum -a 256 ./LibXray.xcframework.zip | awk '{print $1}')
           echo "// swift-tools-version: 5.7" > Package.swift
           echo "" >> Package.swift
           echo "import PackageDescription" >> Package.swift
           echo "" >> Package.swift
           echo "let package = Package(" >> Package.swift
           echo "  name: \"LibXray\"," >> Package.swift
-          echo "  platforms: [.iOS(.v15)]," >> Package.swift
+          echo "  platforms: [.iOS(.v15), .macOS(.v13)]," >> Package.swift
           echo "  products: [" >> Package.swift
           echo "    .library(name: \"LibXray\", targets: [\"LibXray\"])" >> Package.swift
           echo "  ]," >> Package.swift
