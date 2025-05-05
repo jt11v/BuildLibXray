@@ -58,19 +58,40 @@ jobs:
           go mod tidy
 
       # ... предыдущие шаги до "Build xcframework with obfuscation"
+
+      # Проверяем реальный путь к handler.go
+      - name: Debug file structure
+        run: |
+          cd xray/Xray-core
+          find . -name "handler.go" -type f
       
       - name: Obfuscate source code
         run: |
           cd xray/Xray-core
           
-          # Генерируем случайный мусорный файл
+          # 1. Создаём мусорный файл (если нужно)
           JUNK_CODE=$(openssl rand -hex 20)
-          echo "package main; func _junk_$JUNK_CODE() {}" > core/junk.go
+          echo "package main; func _junk_$JUNK_CODE() {}" > junk.go
           
-          # Добавляем рандомные строки в существующие файлы (совместимый с macOS sed)
+          # 2. Находим ЛЮБОЙ .go-файл для модификации (пример для main.go)
+          TARGET_FILE=$(find . -name "*.go" -type f | head -n 1)
+          
+          if [ -z "$TARGET_FILE" ]; then
+            echo "Error: No .go files found in Xray-core directory!"
+            exit 1
+          fi
+          
+          echo "Modifying file: $TARGET_FILE"
+          
+          # 3. Добавляем случайный комментарий в начало файла (macOS-совместимый sed)
+          RAND_STR=$(openssl rand -hex 8)
           sed -i '' "1i\\
-          // $(openssl rand -hex 8)\\
-          " core/app/proxyman/outbound/handler.go
+          // $RAND_STR\\
+          " "$TARGET_FILE"
+          
+          # 4. Проверяем изменения
+          echo "=== First 3 lines of modified file ==="
+          head -n 3 "$TARGET_FILE"
       
       - name: Build xcframework with obfuscation
         run: |
