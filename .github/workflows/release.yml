@@ -22,6 +22,19 @@ jobs:
         with:
           go-version: '1.24.2'
 
+      # Checkout libXray в поддиректорию 'xray'
+      - name: Checkout libXray
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Обеспечить полный клон репозитория
+          repository: 'tozik/libXray'
+          path: 'xray'
+
+      - name: Clone Xray-Core
+        run: |
+          git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
+          ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
+          
       - name: Install dependencies
         run: |
           go install mvdan.cc/garble@latest
