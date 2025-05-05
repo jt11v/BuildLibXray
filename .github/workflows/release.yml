@@ -41,17 +41,6 @@ jobs:
       - name: Adjust Xray-Core Path
         run: |
           ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
-
-      # # Debug directory structure
-      # - name: Debug Directory
-      #   run: |
-      #     echo "Current Directory: $(pwd)"
-      #     echo "Root Directory Contents:"
-      #     ls -la
-      #     echo "xray Directory Contents:"
-      #     ls -la xray
-      #     echo "Xray-core Directory via SymLink:"
-      #     ls -la xray/Xray-core
           
       # Setup Go environment
       - name: Setup Go
@@ -59,9 +48,6 @@ jobs:
         with:
           go-version: '1.24.2'
 
-      # Prepare Go modules
-      # go mod init github.com/XTLS/libXray
-      # rm -f go.mod go.sum
 
       # Install garble for obfuscation
       - name: Install garble
@@ -73,19 +59,12 @@ jobs:
         run: |
           cd xray
           go mod tidy
-          
-      # Build xcframework
-      # - name: Build xcframework
-      #   run: |
-      #     cd xray
-      #     python3 build/main.py apple gomobile
-      #     zip -ry ./LibXray.xcframework.zip ./LibXray.xcframework
-      
+
       - name: Build xcframework with obfuscation
         run: |
           cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
-          python3 build/app/apple_gomobile.py
+          python3 build/main.py apple
           
       - name: Generate Package.swift
         run: |
