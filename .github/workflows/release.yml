@@ -43,15 +43,15 @@ jobs:
           ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
 
       # # Debug directory structure
-      - name: Debug Directory
-        run: |
-          echo "Current Directory: $(pwd)"
-          echo "Root Directory Contents:"
-          ls -la
-          echo "xray Directory Contents:"
-          ls -la xray
-          echo "Xray-core Directory via SymLink:"
-          ls -la xray/Xray-core
+      # - name: Debug Directory
+      #   run: |
+      #     echo "Current Directory: $(pwd)"
+      #     echo "Root Directory Contents:"
+      #     ls -la
+      #     echo "xray Directory Contents:"
+      #     ls -la xray
+      #     echo "Xray-core Directory via SymLink:"
+      #     ls -la xray/Xray-core
           
       # Setup Go environment
       - name: Setup Go
@@ -80,24 +80,12 @@ jobs:
       #     cd xray
       #     python3 build/main.py apple gomobile
       #     zip -ry ./LibXray.xcframework.zip ./LibXray.xcframework
-
+      
       - name: Build xcframework with obfuscation
         run: |
           cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
-          export GARBLE_RANDOM_SEED=$(date +%s)
-
-          # Собираем obfuscated gomobile
-          garble build -o gomobile_obf golang.org/x/mobile/cmd/gomobile
-
-          # Запускаем сборку через него
-          ./gomobile_obf bind \
-            -target=ios,iossimulator,macos,maccatalyst \
-            -iosversion=15.0 \
-            -gcflags=-N -l
-
-          # Упаковываем артефакт
-          zip -ry ./LibXray.xcframework.zip ./LibXray.xcframework
+          python3 build/apple_gomobile.py
           
       - name: Generate Package.swift
         run: |
