@@ -52,11 +52,6 @@ jobs:
           ls -la xray
           echo "Xray-core Directory via SymLink:"
           ls -la xray/Xray-core
-
-      # Install garble for obfuscation
-      - name: Install garble
-        run: |
-          go install mvdan.cc/garble@latest
           
       # Setup Go environment
       - name: Setup Go
@@ -68,11 +63,17 @@ jobs:
       # go mod init github.com/XTLS/libXray
       # rm -f go.mod go.sum
 
+      # Install garble for obfuscation
+      - name: Install garble
+        run: |
+          go install mvdan.cc/garble@latest
+
+      
       - name: Prepare GO
         run: |
           cd xray
           go mod tidy
-
+          
       # Build xcframework
       # - name: Build xcframework
       #   run: |
