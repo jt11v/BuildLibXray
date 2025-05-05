@@ -35,11 +35,16 @@ jobs:
           git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
           ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
           
-      - name: Install dependencies
+      - name: Initialize Go module
+        run: |
+          cd xray  # Переходим в директорию с исходным кодом
+          go mod init github.com/XTLS/libXray
+          go mod tidy
+
+      - name: Install garble
         run: |
           go install mvdan.cc/garble@latest
-          go install golang.org/x/mobile/cmd/gomobile@latest
-          gomobile init
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Build with obfuscation
         run: |
