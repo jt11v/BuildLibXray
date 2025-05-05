@@ -41,6 +41,11 @@ jobs:
           # go mod init
           go mod tidy
 
+      - name: Install garble
+        run: |
+          go install mvdan.cc/garble@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+          
       # - name: Install garble
       #   run: |
       #     go install mvdan.cc/garble@latest
