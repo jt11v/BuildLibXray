@@ -4,60 +4,44 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version'     
+        description: 'Release version'
         required: true
         type: string
-      # tag:
-      #   description: 'Git Tag to checkout'
-      #   required: true
-      #   type: string
 
 jobs:
-  release:
-    runs-on: macOS-15
+  build:
+    runs-on: macos-latest
     steps:
-
-      # Checkout основного репозитория (в котором запускается workflow)
-      - name: Checkout main repository
+      - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Обеспечить полный клон репозитория
+          submodules: recursive
 
-      # Checkout libXray в поддиректорию 'xray'
-      - name: Checkout libXray
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Обеспечить полный клон репозитория
-          repository: 'tozik/libXray'
-          path: 'xray'
-
-      - name: Clone Xray-Core
-        run: |
-          git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
-          ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
-          
-      # Setup Go environment
       - name: Setup Go
-        uses: actions/setup-go@v3.5.0
+        uses: actions/setup-go@v3
         with:
           go-version: '1.24.2'
 
-
-      # Install garble for obfuscation
-      - name: Install garble
+      - name: Install dependencies
         run: |
           go install mvdan.cc/garble@latest
-          
-      - name: Prepare GO
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          gomobile init
+
+      - name: Build with obfuscation
         run: |
-          cd xray
-          go mod tidy
-          
-      - name: Build xcframework
-        run: |
-          cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
-          python3 build/main.py apple gomobile
+          export GARBLE_SEED="$(head -c 16 /dev/urandom | base64)"
+          
+          # Собираем основной код с обфускацией
+          garble -seed="$GARBLE_SEED" build -o ./libxray.a ./main.go
+          
+          # Собираем XCFramework через обфусцированный код
+          python3 build/main.py apple gomobile --obfuscate
+
+      - name: Package artifacts
+        run: |
+          zip -r LibXray.xcframework.zip LibXray.xcframework
           
       # - name: Generate Package.swift
       #   run: |
