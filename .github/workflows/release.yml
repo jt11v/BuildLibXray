@@ -38,7 +38,7 @@ jobs:
       - name: Initialize Go module
         run: |
           cd xray  # Переходим в директорию с исходным кодом
-          go mod init
+          # go mod init
           go mod tidy
 
       # - name: Install garble
