@@ -7,99 +7,59 @@ on:
         description: 'Release version'     
         required: true
         type: string
+      # tag:
+      #   description: 'Git Tag to checkout'
+      #   required: true
+      #   type: string
 
 jobs:
   release:
-    runs-on: macOS-latest  # Используем последнюю версию macOS
+    runs-on: macOS-15
     steps:
+
+      # Checkout основного репозитория (в котором запускается workflow)
       - name: Checkout main repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Обеспечить полный клон репозитория
 
+      # Checkout libXray в поддиректорию 'xray'
       - name: Checkout libXray
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0  # Обеспечить полный клон репозитория
           repository: 'tozik/libXray'
           path: 'xray'
 
+      # Clone Xray-Core
       - name: Clone Xray-Core
         run: |
           git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
+      # # Fix Xray-Core path
+      - name: Adjust Xray-Core Path
+        run: |
           ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
-
-      - name: Setup Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: '1.21'  # Используем проверенную версию
-          cache: true
-
-      - name: Install Gomobile with dependencies
-        run: |
-          # Устанавливаем полный набор зависимостей
-          go install golang.org/x/mobile/cmd/gomobile@latest
-          go install golang.org/x/mobile/cmd/gobind@latest
-          gomobile init -v
           
-          # Явно добавляем в PATH
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-          echo "PATH: $PATH" >> $GITHUB_ENV
+      # Setup Go environment
+      - name: Setup Go
+        uses: actions/setup-go@v3.5.0
+        with:
+          go-version: '1.24.2'
 
-      - name: Verify tools
+
+      # Install garble for obfuscation
+      - name: Install garble
         run: |
-          which gomobile
-          which gobind
-          gomobile version
-
-      - name: Prepare Go modules
+          go install mvdan.cc/garble@latest
+      - name: Prepare GO
         run: |
           cd xray
-          go mod download
           go mod tidy
-
-      - name: Obfuscate source code
-        run: |
-          cd xray/Xray-core
-          
-          # 1. Создаём мусорный файл (если нужно)
-          JUNK_CODE=$(openssl rand -hex 20)
-          echo "package main; func _junk_$JUNK_CODE() {}" > junk.go
-          
-          # 2. Находим ЛЮБОЙ .go-файл для модификации (пример для main.go)
-          TARGET_FILE=$(find . -name "*.go" -type f | head -n 1)
-          
-          if [ -z "$TARGET_FILE" ]; then
-            echo "Error: No .go files found in Xray-core directory!"
-            exit 1
-          fi
-          
-          echo "Modifying file: $TARGET_FILE"
-          
-          # 3. Добавляем случайный комментарий в начало файла (macOS-совместимый sed)
-          RAND_STR=$(openssl rand -hex 8)
-          sed -i '' "1i\\
-          // $RAND_STR\\
-          " "$TARGET_FILE"
-          
-          # 4. Проверяем изменения
-          echo "=== First 3 lines of modified file ==="
-          head -n 3 "$TARGET_FILE"
-      
-      - name: Build xcframework
+      - name: Build xcframework with obfuscation
         run: |
           cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
-          gomobile bind -v \
-            -target=ios,macos \
-            -o LibXray.xcframework \
-            -ldflags="-X main.buildID=$(date +%s)" \
-            ./
-
-      - name: Package xcframework
-        run: |
-          cd xray
-          zip -r LibXray.xcframework.zip LibXray.xcframework
-      # ... остальные шаги (Generate Package.swift и т.д.)
+          python3 build/main.py apple gomobile
           
       - name: Generate Package.swift
         run: |
