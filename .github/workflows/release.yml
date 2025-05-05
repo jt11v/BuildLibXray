@@ -7,10 +7,10 @@ on:
         description: 'Release version'     
         required: true
         type: string
-      tag:
-        description: 'Git Tag to checkout'
-        required: true
-        type: string
+      # tag:
+      #   description: 'Git Tag to checkout'
+      #   required: true
+      #   type: string
 
 jobs:
   release:
@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0  # Обеспечить полный клон репозитория
           repository: 'tozik/SourcelibXray'
           path: 'xray'
-          ref: ${{ github.event.inputs.tag }}
+          # ref: ${{ github.event.inputs.tag }}
 
       # Clone Xray-Core
       - name: Clone Xray-Core
