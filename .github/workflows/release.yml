@@ -7,10 +7,10 @@ on:
         description: 'Release version'     
         required: true
         type: string
-      tag:
-        description: 'Git Tag to checkout'
-        required: true
-        type: string
+      # tag:
+      #   description: 'Git Tag to checkout'
+      #   required: true
+      #   type: string
 
 jobs:
   release:
@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0  # Обеспечить полный клон репозитория
           repository: 'tozik/SourcelibXray'
           path: 'xray'
-          ref: ${{ github.event.inputs.tag }}
+          # ref: ${{ github.event.inputs.tag }}
 
       # Clone Xray-Core
       - name: Clone Xray-Core
@@ -53,6 +53,11 @@ jobs:
           echo "Xray-core Directory via SymLink:"
           ls -la xray/Xray-core
 
+      # Install garble for obfuscation
+      - name: Install garble
+        run: |
+          go install mvdan.cc/garble@latest
+          
       # Setup Go environment
       - name: Setup Go
         uses: actions/setup-go@v3.5.0
@@ -69,12 +74,19 @@ jobs:
           go mod tidy
 
       # Build xcframework
-      - name: Build xcframework
+      # - name: Build xcframework
+      #   run: |
+      #     cd xray
+      #     python3 build/main.py apple gomobile
+      #     zip -ry ./LibXray.xcframework.zip ./LibXray.xcframework
+
+      - name: Build xcframework with obfuscation
         run: |
           cd xray
-          python3 build/main.py apple gomobile
-          zip -ry ./LibXray.xcframework.zip ./LibXray.xcframework
-
+          export PATH="$(go env GOPATH)/bin:$PATH"
+          export GARBLE_RANDOM_SEED=$(date +%s)  # чтобы каждый раз получался разный бинарник
+          python3 build/main.py apple garble
+          
       - name: Generate Package.swift
         run: |
           export CHECKSUM=$(shasum -a 256 xray/LibXray.xcframework.zip | awk '{print $1}')
