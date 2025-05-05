@@ -64,10 +64,40 @@ jobs:
         run: |
           cd xray
           go mod tidy
-      # Build xcframework
-      - name: Build xcframework
+      
+      - name: Build Android Lib
         run: |
           cd xray
           python3 build/main.py android
           ls
+
+      - name: Archive artifacts
+        run: |
+          cd xray
+          mkdir output
+          cp TunnelXVPNS.aar TunnelXVPNS-sources.jar output/
+          zip -r artifacts.zip output/
+
+      - name: Upload artifacts to workflow (optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-artifacts
+          path: xray/artifacts.zip
+
+      # Если вы хотите создать релиз и загрузить артефакты как release assets:
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: xray/artifacts.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        
       
