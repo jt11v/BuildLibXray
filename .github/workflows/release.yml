@@ -31,14 +31,14 @@ jobs:
           repository: 'tozik/libXray'
           path: 'xray'
 
-      # Clone Xray-Core
-      - name: Clone Xray-Core
-        run: |
-          git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
-      # # Fix Xray-Core path
-      - name: Adjust Xray-Core Path
-        run: |
-          ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
+      # # Clone Xray-Core
+      # - name: Clone Xray-Core
+      #   run: |
+      #     git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
+      # # # Fix Xray-Core path
+      # - name: Adjust Xray-Core Path
+      #   run: |
+      #     ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
           
       # Setup Go environment
       - name: Setup Go
@@ -51,55 +51,57 @@ jobs:
       - name: Install garble
         run: |
           go install mvdan.cc/garble@latest
+          
       - name: Prepare GO
         run: |
           cd xray
           go mod tidy
-      - name: Build xcframework with obfuscation
+          
+      - name: Build xcframework
         run: |
           cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
           python3 build/main.py apple gomobile
           
-      - name: Generate Package.swift
-        run: |
-          export CHECKSUM=$(shasum -a 256 xray/LibXray.xcframework.zip | awk '{print $1}')
-          echo "// swift-tools-version: 5.7" > Package.swift
-          echo "" >> Package.swift
-          echo "import PackageDescription" >> Package.swift
-          echo "" >> Package.swift
-          echo "let package = Package(" >> Package.swift
-          echo "  name: \"LibXray\"," >> Package.swift
-          echo "  platforms: [.iOS(.v15), .macOS(.v13)]," >> Package.swift
-          echo "  products: [" >> Package.swift
-          echo "    .library(name: \"LibXray\", targets: [\"LibXray\"])" >> Package.swift
-          echo "  ]," >> Package.swift
-          echo "  targets: [" >> Package.swift
-          echo "    .binaryTarget(" >> Package.swift
-          echo "      name: \"LibXray\"," >> Package.swift
-          echo "      url: \"https://github.com/tozik/BuildLibXray/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip\"," >> Package.swift
-          echo "      checksum: \"$CHECKSUM\"" >> Package.swift
-          echo "    )" >> Package.swift
-          echo "  ]" >> Package.swift
-          echo ")" >> Package.swift
+      # - name: Generate Package.swift
+      #   run: |
+      #     export CHECKSUM=$(shasum -a 256 xray/LibXray.xcframework.zip | awk '{print $1}')
+      #     echo "// swift-tools-version: 5.7" > Package.swift
+      #     echo "" >> Package.swift
+      #     echo "import PackageDescription" >> Package.swift
+      #     echo "" >> Package.swift
+      #     echo "let package = Package(" >> Package.swift
+      #     echo "  name: \"LibXray\"," >> Package.swift
+      #     echo "  platforms: [.iOS(.v15), .macOS(.v13)]," >> Package.swift
+      #     echo "  products: [" >> Package.swift
+      #     echo "    .library(name: \"LibXray\", targets: [\"LibXray\"])" >> Package.swift
+      #     echo "  ]," >> Package.swift
+      #     echo "  targets: [" >> Package.swift
+      #     echo "    .binaryTarget(" >> Package.swift
+      #     echo "      name: \"LibXray\"," >> Package.swift
+      #     echo "      url: \"https://github.com/tozik/BuildLibXray/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip\"," >> Package.swift
+      #     echo "      checksum: \"$CHECKSUM\"" >> Package.swift
+      #     echo "    )" >> Package.swift
+      #     echo "  ]" >> Package.swift
+      #     echo ")" >> Package.swift
           
-      # Пушим артефакт и Package.swift
-      - name: Commit Package.swift
-        run: |
-          # Выводим список файлов в текущем каталоге и проверяем артефакт
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add Package.swift
-          git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}"
-          git push origin HEAD
+      # # Пушим артефакт и Package.swift
+      # - name: Commit Package.swift
+      #   run: |
+      #     # Выводим список файлов в текущем каталоге и проверяем артефакт
+      #     git config user.name "GitHub Actions"
+      #     git config user.email "actions@github.com"
+      #     git add Package.swift
+      #     git commit -m "Update Package.swift for version ${{ github.event.inputs.version }}"
+      #     git push origin HEAD
           
-      # Загрузим релизный артефакт в публичный репозиторий
-      - name: Upload release asset to second repo
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: false
-          tag_name: ${{ github.event.inputs.version }}
-          body: 'Release built from source'
-          files: xray/LibXray.xcframework.zip
-          repository: 'tozik/BuildLibXray'
-          token: ${{ secrets.SECOND_REPO_TOKEN }}
+      # # Загрузим релизный артефакт в публичный репозиторий
+      # - name: Upload release asset to second repo
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: false
+      #     tag_name: ${{ github.event.inputs.version }}
+      #     body: 'Release built from source'
+      #     files: xray/LibXray.xcframework.zip
+      #     repository: 'tozik/BuildLibXray'
+      #     token: ${{ secrets.SECOND_REPO_TOKEN }}
