@@ -31,14 +31,10 @@ jobs:
           repository: 'tozik/libXray'
           path: 'xray'
 
-      # # Clone Xray-Core
-      # - name: Clone Xray-Core
-      #   run: |
-      #     git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
-      # # # Fix Xray-Core path
-      # - name: Adjust Xray-Core Path
-      #   run: |
-      #     ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
+      - name: Clone Xray-Core
+        run: |
+          git clone https://github.com/XTLS/Xray-core.git xray/Xray-core
+          ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
           
       # Setup Go environment
       - name: Setup Go
