@@ -38,13 +38,13 @@ jobs:
       - name: Initialize Go module
         run: |
           cd xray  # Переходим в директорию с исходным кодом
-          go mod init github.com/XTLS/libXray
+          go mod init
           go mod tidy
 
-      - name: Install garble
-        run: |
-          go install mvdan.cc/garble@latest
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+      # - name: Install garble
+      #   run: |
+      #     go install mvdan.cc/garble@latest
+      #     echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Build with obfuscation
         run: |
