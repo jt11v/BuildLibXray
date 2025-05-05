@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Обеспечить полный клон репозитория
-          repository: 'tozik/SourcelibXray'
+          repository: 'XTLS/libXray'
           path: 'xray'
           # ref: ${{ github.event.inputs.tag }}
 
@@ -64,7 +64,7 @@ jobs:
         run: |
           cd xray
           rm -f go.mod go.sum
-          go mod init github.com/tozik/SourcelibXray
+          go mod init github.com/XTLS/libXray
           go mod tidy
 
       # Build xcframework
