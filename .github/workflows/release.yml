@@ -61,10 +61,11 @@ jobs:
 
       # Prepare Go modules
       # go mod init github.com/XTLS/libXray
+      # rm -f go.mod go.sum
+
       - name: Prepare GO
         run: |
           cd xray
-          rm -f go.mod go.sum
           go mod tidy
 
       # Build xcframework
