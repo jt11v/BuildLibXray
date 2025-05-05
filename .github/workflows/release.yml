@@ -85,7 +85,7 @@ jobs:
         run: |
           cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
-          python3 build/apple_gomobile.py
+          python3 build/app/apple_gomobile.py
           
       - name: Generate Package.swift
         run: |
