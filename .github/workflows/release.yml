@@ -82,10 +82,27 @@ jobs:
 
       - name: Build xcframework with obfuscation
         run: |
-          cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
-          export GARBLE_RANDOM_SEED=$(date +%s)  # чтобы каждый раз получался разный бинарник
-          python3 build/main.py apple gomobile
+          export GARBLE_RANDOM_SEED=$(date +%s)
+          cd xray
+
+          # Обфускация библиотеки
+          mkdir -p ../gomobile_obf
+          cd internal/mylib
+          garble build -tags ios -o ../../gomobile_obf/mylib.a
+
+          # Создание обёртки
+          cd ../../
+          mkdir -p xray
+          echo 'package xray' > xray/bindings.go
+          echo 'import _ "SourcelibXray/internal/mylib"' >> xray/bindings.go
+
+          # Сборка xcframework
+          cd xray
+          gomobile bind -target=ios,iossimulator,macos,maccatalyst -iosversion=15.0 -o LibXray.xcframework SourcelibXray/xray
+
+          # Упаковка
+          zip -ry ./LibXray.xcframework.zip ./LibXray.xcframework
           
       - name: Generate Package.swift
         run: |
