@@ -28,9 +28,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Обеспечить полный клон репозитория
-          repository: 'tozik/SourcelibXray'
+          repository: 'tozik/libXray'
           path: 'xray'
-          # ref: ${{ github.event.inputs.tag }}
 
       # Clone Xray-Core
       - name: Clone Xray-Core
@@ -54,7 +53,6 @@ jobs:
         run: |
           go install mvdan.cc/garble@latest
 
-      
       - name: Prepare GO
         run: |
           cd xray
@@ -82,7 +80,7 @@ jobs:
           echo "  targets: [" >> Package.swift
           echo "    .binaryTarget(" >> Package.swift
           echo "      name: \"LibXray\"," >> Package.swift
-          echo "      url: \"https://github.com/tozik/LibXray/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip\"," >> Package.swift
+          echo "      url: \"https://github.com/tozik/BuildLibXray/releases/download/${{ github.event.inputs.version }}/LibXray.xcframework.zip\"," >> Package.swift
           echo "      checksum: \"$CHECKSUM\"" >> Package.swift
           echo "    )" >> Package.swift
           echo "  ]" >> Package.swift
@@ -106,5 +104,5 @@ jobs:
           tag_name: ${{ github.event.inputs.version }}
           body: 'Release built from source'
           files: xray/LibXray.xcframework.zip
-          repository: 'tozik/LibXray'
+          repository: 'tozik/BuildLibXray'
           token: ${{ secrets.SECOND_REPO_TOKEN }}
