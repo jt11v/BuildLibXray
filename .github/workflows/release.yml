@@ -41,16 +41,16 @@ jobs:
         run: |
           ln -s "$(pwd)/xray/Xray-core" "$(pwd)/xray/../Xray-core"
           
-      # Setup Go environment
-      - name: Setup Go
-        uses: actions/setup-go@v3.5.0
-        with:
-          go-version: '1.24.2'
-
-      # Install garble for obfuscation
-      - name: Install garble
+      - name: Install Gomobile and Garble
         run: |
+          # Устанавливаем gomobile и добавляем в PATH
+          go install golang.org/x/mobile/cmd/gomobile@latest
           go install mvdan.cc/garble@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH  # Критически важно!
+      
+      - name: Initialize Gomobile
+        run: |
+          gomobile init  # Инициализация после установки
 
       - name: Prepare GO
         run: |
