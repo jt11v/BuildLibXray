@@ -64,7 +64,7 @@ jobs:
         run: |
           cd xray
           rm -f go.mod go.sum
-          go mod init github.com/xtls/libxray
+          go mod init github.com/tozik/SourcelibXray
           go mod tidy
 
       # Build xcframework
