@@ -47,7 +47,6 @@ jobs:
         with:
           go-version: '1.24.2'
 
-
       # Install garble for obfuscation
       - name: Install garble
         run: |
@@ -58,11 +57,33 @@ jobs:
           cd xray
           go mod tidy
 
+      # ... предыдущие шаги до "Build xcframework with obfuscation"
+      
+      - name: Obfuscate source code
+        run: |
+          cd xray/Xray-core
+          JUNK_CODE=$(openssl rand -hex 20)
+          echo "package main; func _junk_$JUNK_CODE() {}" > core/junk.go
+          sed -i '' "1s/^\/\/ $RANDOM\n/" core/app/proxyman/outbound/handler.go
+      
       - name: Build xcframework with obfuscation
         run: |
           cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
-          python3 build/main.py apple gomobile
+          export GARBLE_SEED=$(openssl rand -hex 12)
+          gomobile bind -v -ldflags="-X main.junk=$GARBLE_SEED" \
+            -target ios,macos \
+            -o LibXray.xcframework \
+            ./
+      
+      - name: Obfuscate binary
+        run: |
+          cd xray
+          find LibXray.xcframework -name 'LibXray' -exec \
+            dd if=/dev/urandom bs=1 count=1024 >> {} \;
+          zip -r LibXray.xcframework.zip LibXray.xcframework
+      
+      # ... остальные шаги (Generate Package.swift и т.д.)
           
       - name: Generate Package.swift
         run: |
