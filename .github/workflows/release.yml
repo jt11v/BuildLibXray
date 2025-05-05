@@ -86,7 +86,7 @@ jobs:
           cd xray
           export PATH="$(go env GOPATH)/bin:$PATH"
           export GARBLE_RANDOM_SEED=$(date +%s)  # чтобы каждый раз получался разный бинарник
-          python3 build/main.py apple garble
+          python3 build/main.py apple gomobile
           
       - name: Generate Package.swift
         run: |
